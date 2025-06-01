@@ -1,48 +1,49 @@
 #include <iostream>
 #include <fstream>
-#include <iomanip>
-#include <sstream>
-#include <openssl/sha.h>
+#include <string>
+#include <cryptopp/sha.h>
+#include <cryptopp/hex.h>
+#include <cryptopp/files.h>
 
-std::string calculateSHA256(const std::string& filePath) {
-    std::ifstream file(filePath, std::ios::binary);
-    if (!file) {
-        throw std::runtime_error("Could not open file: " + filePath);
+using namespace CryptoPP;
+
+void calculateAndSaveSHA256(const std::string& inputFile, const std::string& outputFile) {
+    try {
+        SHA256 hash;
+        
+        // Create hash calculation pipeline
+        FileSource fileSource(
+            inputFile.c_str(),
+            true,
+            new HashFilter(
+                hash,
+                new HexEncoder(
+                    new FileSink(outputFile.c_str()),
+                    false // lowercase output
+                )
+            )
+        );
+        
+        std::cout << "Hash saved to: " << outputFile << std::endl;
     }
-
-    SHA256_CTX shaContext;
-    SHA256_Init(&shaContext);
-
-    char buffer[65536]; // 64KB buffer
-    while (file.read(buffer, sizeof(buffer))) {
-        SHA256_Update(&shaContext, buffer, file.gcount());
+    catch(const CryptoPP::Exception& e) {
+        std::cerr << "CryptoPP Error: " << e.what() << std::endl;
+        throw std::runtime_error("Hash computation failed");
     }
-    SHA256_Update(&shaContext, buffer, file.gcount());
-
-    unsigned char hash[SHA256_DIGEST_LENGTH];
-    SHA256_Final(hash, &shaContext);
-
-    std::stringstream ss;
-    for (int i = 0; i < SHA256_DIGEST_LENGTH; i++) {
-        ss << std::hex << std::setw(2) << std::setfill('0') << (int)hash[i];
-    }
-
-    return ss.str();
 }
 
 int main(int argc, char* argv[]) {
-    if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " <file_path>\n";
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <input_file> <output_hash_file>\n";
         return 1;
     }
 
     try {
-        std::string hash = calculateSHA256(argv[1]);
-        std::cout << "SHA-256: " << hash << std::endl;
-    } catch (const std::exception& e) {
+        calculateAndSaveSHA256(argv[1], argv[2]);
+        return 0;
+    } 
+    catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return 1;
     }
-
-    return 0;
 }

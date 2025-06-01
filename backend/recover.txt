@@ -1,8 +1,0 @@
-Riyansh Sachan is building a Time-Capsule File Locker.
-This project includes:
-- Compression
-- Encryption
-- Time-lock
-- File hashing
-
-End of test.
