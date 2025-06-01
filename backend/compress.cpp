@@ -5,24 +5,21 @@
 #include <bitset>
 using namespace std;
 
-// Huffman Tree Node
 struct HuffNode {
-    char data;
+    unsigned char data;  // Changed to unsigned char for binary files
     int freq;
     HuffNode *left, *right;
-    HuffNode(char data, int freq) : 
+    HuffNode(unsigned char data, int freq) : 
         data(data), freq(freq), left(nullptr), right(nullptr) {}
 };
 
-// Comparator for priority queue
 struct Compare {
     bool operator()(HuffNode* a, HuffNode* b) {
         return a->freq > b->freq;
     }
 };
 
-// Traverse Huffman Tree and generate codes
-void generateCodes(HuffNode* root, string code, unordered_map<char, string>& huffCode) {
+void generateCodes(HuffNode* root, string code, unordered_map<unsigned char, string>& huffCode) {
     if (!root) return;
     if (!root->left && !root->right) {
         huffCode[root->data] = code;
@@ -31,30 +28,28 @@ void generateCodes(HuffNode* root, string code, unordered_map<char, string>& huf
     generateCodes(root->right, code + "1", huffCode);
 }
 
-// Write binary data to file
-void writeEncodedData(const string& inputFile, const string& outputFile, const unordered_map<char, string>& huffCode) {
+void writeEncodedData(const string& inputFile, const string& outputFile, 
+                     const unordered_map<unsigned char, string>& huffCode) {
     ifstream inFile(inputFile, ios::binary);
     ofstream outFile(outputFile, ios::binary);
-    
-    // 1. Write Huffman Code Table (for decoding)
+
+    // 1. Write Huffman Code Table
     outFile << huffCode.size() << '\n';
     for (const auto& pair : huffCode) {
-        outFile << pair.first << '\0' << pair.second << '\0';
+        outFile << static_cast<int>(pair.first) << '\0' << pair.second << '\0';
     }
 
     // 2. Write compressed data
     string encodedStr;
-    char ch;
-    while (inFile.get(ch)) {
+    unsigned char ch;
+    while (inFile.read(reinterpret_cast<char*>(&ch), sizeof(ch))) {
         encodedStr += huffCode.at(ch);
     }
-    
-    // Pad with '0's to make it 8-bit aligned
+
     int padding = 8 - (encodedStr.length() % 8);
     encodedStr += string(padding, '0');
     outFile << padding << '\n';
 
-    // Write as bytes
     for (size_t i = 0; i < encodedStr.length(); i += 8) {
         bitset<8> bits(encodedStr.substr(i, 8));
         outFile << static_cast<char>(bits.to_ulong());
@@ -64,16 +59,15 @@ void writeEncodedData(const string& inputFile, const string& outputFile, const u
     outFile.close();
 }
 
-// Main compression function
 void compressFile(const string& inputFile, const string& outputFile) {
-    // Step 1: Calculate character frequencies
     ifstream inFile(inputFile, ios::binary);
-    unordered_map<char, int> freq;
-    char ch;
-    while (inFile.get(ch)) freq[ch]++;
+    unordered_map<unsigned char, int> freq;
+    unsigned char ch;
+    while (inFile.read(reinterpret_cast<char*>(&ch), sizeof(ch))) {
+        freq[ch]++;
+    }
     inFile.close();
 
-    // Step 2: Build Huffman Tree
     priority_queue<HuffNode*, vector<HuffNode*>, Compare> pq;
     for (const auto& pair : freq) {
         pq.push(new HuffNode(pair.first, pair.second));
@@ -88,20 +82,17 @@ void compressFile(const string& inputFile, const string& outputFile) {
         pq.push(newNode);
     }
 
-    // Step 3: Generate Huffman Codes
-    unordered_map<char, string> huffCode;
+    unordered_map<unsigned char, string> huffCode;
     generateCodes(pq.top(), "", huffCode);
-
-    // Step 4: Write compressed data
     writeEncodedData(inputFile, outputFile, huffCode);
 }
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        cerr << "Usage: " << argv[0] << " <input_file> <output_file>\n";
+        cerr << "Usage: " << argv[0] << " <input_file.pdf> <output_file.huff>\n";
         return 1;
     }
     compressFile(argv[1], argv[2]);
-    cout << "File compressed successfully!\n";
+    cout << "PDF compressed successfully!\n";
     return 0;
 }

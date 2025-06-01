@@ -6,12 +6,12 @@
 using namespace std;
 
 struct HuffNode {
-    char data;
+    unsigned char data;
     HuffNode *left, *right;
-    HuffNode(char data) : data(data), left(nullptr), right(nullptr) {}
+    HuffNode(unsigned char data) : data(data), left(nullptr), right(nullptr) {}
 };
 
-HuffNode* rebuildTree(const unordered_map<char, string>& huffCode) {
+HuffNode* rebuildTree(const unordered_map<unsigned char, string>& huffCode) {
     HuffNode* root = new HuffNode('\0');
     for (const auto& pair : huffCode) {
         HuffNode* current = root;
@@ -34,17 +34,18 @@ void decompressFile(const string& inputFile, const string& outputFile) {
     ofstream outFile(outputFile, ios::binary);
 
     // Step 1: Read Huffman Code Table
-    unordered_map<char, string> huffCode;
+    unordered_map<unsigned char, string> huffCode;
     int codeTableSize;
     inFile >> codeTableSize;
     inFile.ignore(); // Skip newline
 
     for (int i = 0; i < codeTableSize; ++i) {
-        char ch = inFile.get(); // Read character
+        int chVal;
+        inFile >> chVal;
         inFile.ignore(); // Skip null terminator
         string code;
-        getline(inFile, code, '\0'); // Read code until null terminator
-        huffCode[ch] = code;
+        getline(inFile, code, '\0');
+        huffCode[static_cast<unsigned char>(chVal)] = code;
     }
 
     // Step 2: Rebuild Huffman Tree
@@ -62,7 +63,6 @@ void decompressFile(const string& inputFile, const string& outputFile) {
         bitStream += bits.to_string();
     }
 
-    // Remove padding
     bitStream = bitStream.substr(0, bitStream.length() - padding);
 
     // Step 4: Decode using Huffman Tree
@@ -70,7 +70,7 @@ void decompressFile(const string& inputFile, const string& outputFile) {
     for (char bit : bitStream) {
         current = (bit == '0') ? current->left : current->right;
         if (!current->left && !current->right) {
-            outFile << current->data;
+            outFile.write(reinterpret_cast<const char*>(&current->data), sizeof(current->data));
             current = root;
         }
     }
@@ -81,10 +81,10 @@ void decompressFile(const string& inputFile, const string& outputFile) {
 
 int main(int argc, char* argv[]) {
     if (argc != 3) {
-        cerr << "Usage: " << argv[0] << " <compressed_file> <output_file>\n";
+        cerr << "Usage: " << argv[0] << " <compressed_file.huff> <output_file.pdf>\n";
         return 1;
     }
     decompressFile(argv[1], argv[2]);
-    cout << "File decompressed successfully!\n";
+    cout << "PDF decompressed successfully!\n";
     return 0;
 }
