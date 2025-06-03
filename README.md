@@ -319,4 +319,4 @@ A: Default is 1GB, configurable via environment variables.
 ## License 📄
 
 MIT License  
-Copyright (c) 2023 [Riyans sachan]
+Copyright (c) 2023 [Riyansh sachan]
