@@ -95,7 +95,7 @@ time-capsule/
 4. Result encrypted with AES-256
 5. Package stored as `.tcf` (Time Capsule File) format
 
-```mermaid
+
 sequenceDiagram
     User->>Frontend: Upload File + Set Date
     Frontend->>Backend: POST /api/lock
@@ -103,7 +103,7 @@ sequenceDiagram
     C++-->>Backend: .tcf file
     Backend->>Database: Store Metadata
     Backend-->>Frontend: Download Link
-```
+
 
 ## Installation Guide ⚙️
 
@@ -299,18 +299,4 @@ A: Default is 1GB, configurable via environment variables.
 ## License 📄
 
 MIT License  
-Copyright (c) 2023 [Your Name]
-
-```text
-Permission is hereby granted... [standard MIT text]
-```
-
----
-
-This comprehensive README demonstrates:
-- Deep technical understanding
-- Attention to security
-- Production-grade considerations
-- Clear communication skills
-
-Perfect for discussing in technical interviews! 🎯
+Copyright (c) 2023 [Riyans sachan]
