@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Capsule Locker</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⏳ Time Capsule Locker</h1>
+            <p>Secure files until your specified unlock date</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="lock">Lock Files</button>
+            <button class="tab" data-tab="unlock">Unlock Files</button>
+        </div>
+
+        <div id="lock-tab" class="tab-content active">
+            <div class="file-upload">
+                <input type="file" id="file-input">
+                <label for="file-input">Choose File</label>
+                <span id="file-name">No file selected</span>
+            </div>
+            
+            <div class="date-picker">
+                <label for="unlock-date">Unlock Date:</label>
+                <input type="date" id="unlock-date" min="">
+            </div>
+            
+            <div class="password">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Minimum 8 characters">
+            </div>
+            
+            <button id="lock-btn" class="btn primary">Lock File</button>
+            <div id="lock-status" class="status"></div>
+        </div>
+
+        <div id="unlock-tab" class="tab-content">
+            <div class="file-upload">
+                <input type="file" id="tcf-input" accept=".tcf">
+                <label for="tcf-input">Choose .tcf File</label>
+                <span id="tcf-name">No file selected</span>
+            </div>
+            
+            <div class="password">
+                <label for="unlock-password">Password:</label>
+                <input type="password" id="unlock-password">
+            </div>
+            
+            <button id="unlock-btn" class="btn primary">Unlock File</button>
+            <div id="unlock-status" class="status"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
