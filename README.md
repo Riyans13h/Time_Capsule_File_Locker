@@ -1,6 +1,6 @@
 # Time Capsule File Locker 🔒⏳
 
-![Project Banner](https://example.com/path/to/banner-image.png) *[Sample placeholder - add your own screenshot]*
+
 
 ## Table of Contents
 1. [Project Overview](#project-overview-)
@@ -68,23 +68,43 @@ graph TD
 
 ### Directory Structure
 ```
-time-capsule/
-├── backend/               # C++ Core Modules
-│   ├── compress.cpp       # Huffman compression
-│   ├── encrypt.cpp        # AES-256 implementation
-│   ├── time_lock.cpp      # Date validation
-│   └── ...                # 10 other modules
-├── server/                # Node.js API
-│   ├── api/               # REST endpoints
-│   ├── middleware/        # Auth & validation
-│   └── server.js          # Main entry point
-├── web/                   # Frontend
-│   ├── src/               # JS source
-│   ├── assets/            # CSS/images
-│   └── index.html         # Main UI
-├── tests/                 # Test suites
-└── docs/                  # Documentation
-```
+TimeCapsuleFileLocker/
+│
+├── 📂 web/                      # Frontend files
+│   ├── index.html              # Main UI for uploading and downloading
+│   ├── style.css               # Styling for the web page
+│   └── app.js                  # JavaScript for UI actions (upload, decrypt, etc.)
+│
+├── 📂 backend/                  # Core logic written in C++
+│   ├── compress.cpp            # Huffman compression
+│   ├── decompress.cpp          # Huffman decompression
+│   ├── encrypt.cpp             # XOR/AES encryption
+│   ├── decrypt.cpp             # XOR/AES decryption
+│   ├── hash.cpp                # File hashing using SHA-256
+│   ├── metadata.cpp            # Generate and read metadata (date, hash, etc.)
+│   ├── time_lock.cpp           # Date comparison and time-lock logic
+│   └── main.cpp                # Integrates all backend modules
+│
+├── 📂 server/                   # Optional backend server
+│   ├── server.js               # Node.js/Express server (or use Flask if Python preferred)
+│   ├── routes/                 # File upload/download/decrypt APIs
+│   └── utils/                  # Helpers for file I/O and calling C++ binaries
+│
+├── 📂 data/                     # Temporary and permanent file storage
+│   ├── uploads/                # Original uploaded files
+│   ├── capsules/               # Final encrypted, compressed, locked file (.tcf)
+│   └── temp/                   # Intermediate files for processing
+│                   
+│
+├── 📂 docs/                     # Documentation and reports
+│   ├── project_report.pdf      # Final report
+│   └── architecture_diagram.png # System diagram
+│
+├── README.md                   # Project overview and instructions
+├── LICENSE                     # License file (MIT.)
+
+
+read this 
 
 ## System Workflow 🔄
 
