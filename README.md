@@ -58,7 +58,7 @@ A secure digital time capsule system that allows users to:
 ### Component Diagram
 ```mermaid
 graph TD
-    A[Frontend] -->|HTTP| B[Node.js API]
+    A[Frontend] -->|HTTPs| B[Node.js API]
     B -->|IPC| C[C++ Core]
     C --> D[Encryption Engine]
     C --> E[Compression Engine]
@@ -96,10 +96,6 @@ TimeCapsuleFileLocker/
 │   └── temp/                   # Intermediate files for processing
 │                   
 │
-├── 📂 docs/                     # Documentation and reports
-│   ├── project_report.pdf      # Final report
-│   └── architecture_diagram.png # System diagram
-│
 ├── README.md                   # Project overview and instructions
 ├── LICENSE                     # License file (MIT.)
 
@@ -129,7 +125,7 @@ sequenceDiagram
 
 ### Prerequisites
 - Linux/macOS (Windows WSL supported)
-- GCC 9+ or Clang 12+
+- GCC 9+ 
 - Node.js 16+
 - Crypto++ 8.5+
 
@@ -194,62 +190,15 @@ CAPSULE_DIR=./data/capsules
   "filename": "capsule_12345.tcf",
   "sha256": "a1b2c3...",
   "unlockDate": "2025-12-31T00:00:00Z"
+  "signature" : "f38a3e4c9d"
+  
 }
 ```
 
-## Development Setup 👨‍💻
-
-### Debugging Tips
-```bash
-# Run with debug logging
-DEBUG=timecapsule:* npm run dev
-
-# Memory leak detection
-valgrind --leak-check=full ./backend/compress testfile.txt
-
-# Performance profiling
-perf record ./backend/encrypt largefile.bin
+#
 ```
 
-## Testing 🧪
 
-### Test Cases
-| Category | Tools Used | Coverage |
-|----------|------------|----------|
-| Unit Tests | Google Test (C++), Jest (JS) | 85% |
-| Integration | Postman, Cypress | 70% |
-| Security | OWASP ZAP, Valgrind | 100% crypto modules |
-| Performance | k6, Locust | Up to 10GB files |
-
-Run test suite:
-```bash
-make test  # Runs all test suites
-```
-
-## Deployment 🚀
-
-### Production Recommendations
-1. **Web Server**: NGINX reverse proxy
-2. **Process Manager**: PM2 cluster mode
-3. **Security**: 
-   - TLS 1.3 encryption
-   - Rate limiting (100 reqs/min)
-4. **Monitoring**:
-   - Prometheus metrics
-   - Log rotation
-
-Example PM2 config:
-```json
-{
-  "name": "timecapsule",
-  "script": "server/server.js",
-  "instances": "max",
-  "exec_mode": "cluster",
-  "env": {
-    "NODE_ENV": "production"
-  }
-}
-```
 
 ## Security Considerations 🔐
 
@@ -276,7 +225,7 @@ Example PM2 config:
 | 100MB     | 1.2s             | 0.9s            |
 | 1GB       | 12s              | 8s              |
 
-*Tested on AWS t3.xlarge instance*
+
 
 ## Troubleshooting 🛠️
 
@@ -319,4 +268,5 @@ A: Default is 1GB, configurable via environment variables.
 ## License 📄
 
 MIT License  
-Copyright (c) 2023 [Riyansh sachan]
+Copyright (c) 2024 [Riyansh sachan]
+
