@@ -37,7 +37,7 @@ A secure digital time capsule system that allows users to:
 ## Key Features ✨
 
 ### Security
-- AES-256 encryption with Galois/Counter Mode (GCM)
+- AES-256 encryption with CBC
 - PBKDF2 key derivation with 100,000 iterations
 - Secure memory wiping for sensitive data
 - SHA-256 file integrity verification
@@ -269,4 +269,5 @@ A: Default is 1GB, configurable via environment variables.
 
 MIT License  
 Copyright (c) 2024 [Riyansh sachan]
+
 
