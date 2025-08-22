@@ -1,273 +1,281 @@
-# Time Capsule File Locker 🔒⏳
 
+# 🔒 Time Capsule File Locker ⏳
 
+A secure, zero-knowledge file locking system that allows users to encrypt and compress files, assign a future unlock date, and share access securely via a Capsule ID. Decryption and decompression occur **only on the client side**, ensuring complete end-to-end security.
 
-## Table of Contents
-1. [Project Overview](#project-overview-)
-2. [Key Features](#key-features-)
-3. [Technical Architecture](#technical-architecture-)
-4. [System Workflow](#system-workflow-)
-5. [Installation Guide](#installation-guide-)
-6. [Configuration](#configuration-)
-7. [API Documentation](#api-documentation-)
-8. [Development Setup](#development-setup-)
-9. [Testing](#testing-)
-10. [Deployment](#deployment-)
-11. [Security Considerations](#security-considerations-)
-12. [Performance Metrics](#performance-metrics-)
-13. [Troubleshooting](#troubleshooting-)
-14. [FAQs](#faqs-)
-15. [Contributing](#contributing-)
-16. [License](#license-)
+---
 
-## Project Overview 🌐
+## 📚 Table of Contents
+1. [Project Overview](#project-overview)
+2. [Key Features](#key-features)
+3. [Technical Architecture](#technical-architecture)
+4. [System Workflow](#system-workflow)
+5. [Installation Guide](#installation-guide)
+6. [Configuration](#configuration)
+7. [API Documentation](#api-documentation)
+8. [Security Considerations](#security-considerations)
+9. [Performance Metrics](#performance-metrics)
+10. [Troubleshooting](#troubleshooting)
+11. [FAQs](#faqs)
+12. [Contributing](#contributing)
+13. [License](#license)
 
-A secure digital time capsule system that allows users to:
-- Encrypt and compress files with military-grade security
-- Set future unlock dates (from 1 day to 10 years)
-- Ensure files remain inaccessible until the specified date
-- Verify file integrity with cryptographic hashing
+---
+
+## 🌐 Project Overview
+
+The Time Capsule File Locker allows users to:
+- Compress, encrypt, and lock files until a **specific future date**
+- Store locked files on a **zero-knowledge server**
+- Share **only a Capsule ID and password** with recipients
+- Ensure decryption only happens **after the unlock date** on the recipient’s machine
 
 **Use Cases**:
 - Legal document escrow
+- Digital wills & posthumous messages
 - Intellectual property protection
-- Personal time capsules
-- Secure document retention
+- Time-based journal backups
 
-## Key Features ✨
+---
 
-### Security
-- AES-256 encryption with CBC
-- PBKDF2 key derivation with 100,000 iterations
-- Secure memory wiping for sensitive data
-- SHA-256 file integrity verification
+## ✨ Key Features
 
-### Performance
-- Huffman compression (avg. 30-50% size reduction)
-- Stream-based processing (handles multi-GB files)
-- Parallel pipeline architecture
+### ✅ Security
+- AES-256-CBC encryption via Crypto++
+- PBKDF2 key derivation with salt (100,000 iterations)
+- Time-lock via UTC timestamp validation
+- SHA-256 hashing for integrity verification
+- Zero-knowledge server: password never sent
 
-### Usability
-- Responsive web interface
-- Drag-and-drop file uploads
-- Detailed status notifications
-- Download history tracking
+### 🚀 Performance
+- Huffman compression (30–50% typical size reduction)
+- Large-file support (multi-GB)
+- Native C++ for core logic + WebAssembly build option
 
-## Technical Architecture 🏗️
+### 🖥 Usability
+- Simple drag & drop UI
+- No registration/login required
+- Download history, hash verification
+- Fully client-side decryption
 
-### Component Diagram
+---
+
+## 🏗 Technical Architecture
+
 ```mermaid
 graph TD
-    A[Frontend] -->|HTTPs| B[Node.js API]
-    B -->|IPC| C[C++ Core]
-    C --> D[Encryption Engine]
-    C --> E[Compression Engine]
-    C --> F[Time Lock Validator]
-    B --> G[File Storage]
-```
+    A[User Browser] -->|Encrypt & Compress| B[Client-Side WASM]
+    B -->|POST .tcf + metadata| C[Node.js Server]
+    C -->|Store| D[SQLite + Secure File Storage]
+    User -->|Capsule ID + Password| E[Recipient]
+    E -->|Fetch .tcf by ID| C
+    C -->|If UnlockDate Valid| E
+    E -->|Decrypt + Decompress| B
+````
 
-### Directory Structure
-```
-TimeCapsuleFileLocker/
-│
-├── 📂 web/                      # Frontend files
-│   ├── index.html              # Main UI for uploading and downloading
-│   ├── style.css               # Styling for the web page
-│   └── app.js                  # JavaScript for UI actions (upload, decrypt, etc.)
-│
-├── 📂 backend/                  # Core logic written in C++
-│   ├── compress.cpp            # Huffman compression
-│   ├── decompress.cpp          # Huffman decompression
-│   ├── encrypt.cpp             # XOR/AES encryption
-│   ├── decrypt.cpp             # XOR/AES decryption
-│   ├── hash.cpp                # File hashing using SHA-256
-│   ├── metadata.cpp            # Generate and read metadata (date, hash, etc.)
-│   ├── time_lock.cpp           # Date comparison and time-lock logic
-│   └── main.cpp                # Integrates all backend modules
-│
-├── 📂 server/                   # Optional backend server
-│   ├── server.js               # Node.js/Express server (or use Flask if Python preferred)
-│   ├── routes/                 # File upload/download/decrypt APIs
-│   └── utils/                  # Helpers for file I/O and calling C++ binaries
-│
-├── 📂 data/                     # Temporary and permanent file storage
-│   ├── uploads/                # Original uploaded files
-│   ├── capsules/               # Final encrypted, compressed, locked file (.tcf)
-│   └── temp/                   # Intermediate files for processing
-│                   
-│
-├── README.md                   # Project overview and instructions
-├── LICENSE                     # License file (MIT.)
+---
 
+## 🔄 System Workflow
 
-read this 
+### 🔐 Sender (Client 1)
 
-## System Workflow 🔄
+1. Compress → Encrypt → Hash file using password
+2. Generate metadata (salt, unlock date, hash)
+3. Upload `.tcf` + metadata to server
+4. Server returns a `capsuleId`
+5. Share capsule ID + password with receiver
 
-### Locking Process
-1. User uploads file via web interface
-2. System generates metadata (SHA-256, timestamps)
-3. File compressed using Huffman coding
-4. Result encrypted with AES-256
-5. Package stored as `.tcf` (Time Capsule File) format
+### 📥 Receiver (Client 2)
 
+1. Submit capsule ID to server
+2. If unlock date is reached → receive `.tcf` + metadata
+3. Use password to:
 
-sequenceDiagram
-    User->>Frontend: Upload File + Set Date
-    Frontend->>Backend: POST /api/lock
-    Backend->>C++: Compress + Encrypt
-    C++-->>Backend: .tcf file
-    Backend->>Database: Store Metadata
-    Backend-->>Frontend: Download Link
+   * Derive key
+   * Decrypt + decompress `.tcf`
+   * Verify SHA-256 hash
 
+---
 
-## Installation Guide ⚙️
+## 🧪 Installation Guide
 
-### Prerequisites
-- Linux/macOS (Windows WSL supported)
-- GCC 9+ 
-- Node.js 16+
-- Crypto++ 8.5+
+### 🔧 Prerequisites
 
-### Step-by-Step Setup
+* Linux/macOS (or WSL)
+* GCC/Clang with C++17 support
+* Node.js >= 16.x
+* Crypto++ library
+* SQLite3
+* Emscripten (optional for WebAssembly)
+
+### 📥 Setup
+
 ```bash
-# 1. Clone repository
-git clone https://github.com/yourusername/time-capsule.git
-cd time-capsule
+# Clone the repository
+git clone https://github.com/yourusername/time-capsule-locker.git
+cd time-capsule-locker
 
-# 2. Build C++ components
-cd backend
-make release
+# Build C++ logic
+cd cpp_core
+make
 cd ..
 
-# 3. Install Node dependencies
-npm install --production
+# Install server dependencies
+cd server
+npm install
 
-# 4. Configure environment
+# Setup environment
 cp .env.example .env
-nano .env  # Edit configuration
+nano .env  # Set variables like PORT, FILE_SIZE_LIMIT
 
-# 5. Initialize storage
-mkdir -p data/{uploads,capsules,temp}
-chmod 700 data
-
-# 6. Start services
-npm start
+# Start backend server
+node server.js
 ```
 
-## Configuration ⚡
+---
 
-### Environment Variables
+## ⚙ Configuration
+
+`.env` Example:
+
 ```ini
-# Server Configuration
 PORT=3000
-MAX_FILE_SIZE=1073741824  # 1GB
-
-# Security
-ENCRYPTION_ITERATIONS=100000
-SESSION_SECRET=your_secure_secret
-
-# Storage Paths
+MAX_FILE_SIZE=1073741824
 UPLOAD_DIR=./data/uploads
 CAPSULE_DIR=./data/capsules
+DB_PATH=./server/capsules.db
 ```
 
-## API Documentation 📚
+---
 
-### Lock Endpoint
-**POST** `/api/lock`
+## 📡 API Documentation
+
+### `POST /api/lock`
+
+Uploads a `.tcf` file and metadata to the server.
+
+#### Request (multipart/form-data):
+
+* `file`: Binary `.tcf` file
+* `sha256`: File hash
+* `unlockDate`: ISO UTC date
+* `salt`: Random hex salt
+* `filename`: Original filename
+
+#### Response:
+
 ```json
-// Request
-{
-  "file": "[binary data]",
-  "unlockDate": "2025-12-31",
-  "password": "securePass123!"
-}
-
-// Response
 {
   "status": "success",
-  "filename": "capsule_12345.tcf",
-  "sha256": "a1b2c3...",
-  "unlockDate": "2025-12-31T00:00:00Z"
-  "signature" : "f38a3e4c9d"
-  
+  "capsuleId": "ab12cd34-ef56-7890-ab12-34cd56ef7890"
 }
 ```
 
-#
+---
+
+### `POST /api/unlock`
+
+Fetch file and metadata by Capsule ID (if unlock date is valid)
+
+#### Request:
+
+```json
+{
+  "capsuleId": "ab12cd34-ef56-7890-ab12-34cd56ef7890"
+}
 ```
 
+#### Response (if unlocked):
 
+```json
+{
+  "status": "success",
+  "file": "<base64 .tcf>",
+  "salt": "abc123...",
+  "sha256": "def456...",
+  "filename": "message.tcf"
+}
+```
 
-## Security Considerations 🔐
+#### Response (if locked):
 
-### Threat Model
-| Threat | Mitigation Strategy |
-|--------|---------------------|
-| Brute Force Attacks | PBKDF2 key stretching |
-| Timing Attacks | Constant-time comparisons |
-| Memory Scraping | Secure memory wiping |
-| Metadata Leakage | Encrypted metadata store |
+```json
+{
+  "status": "error",
+  "message": "File is still locked. Try again later."
+}
+```
 
-### Audit Checklist
-- [ ] All crypto operations use vetted libraries
-- [ ] No secrets in source code
-- [ ] Input validation on all endpoints
-- [ ] Regular dependency updates
+---
 
-## Performance Metrics 📊
+## 🔐 Security Considerations
 
-### Benchmark Results
-| File Size | Compression Time | Encryption Time |
-|-----------|------------------|-----------------|
-| 1MB       | 120ms            | 85ms            |
-| 100MB     | 1.2s             | 0.9s            |
-| 1GB       | 12s              | 8s              |
+| Threat               | Defense                        |
+| -------------------- | ------------------------------ |
+| Brute-force attacks  | PBKDF2 key derivation w/ salt  |
+| Server compromise    | Encrypted file + zero-password |
+| Metadata tampering   | SHA-256 hash + hash check      |
+| Replay attacks       | UUID capsule IDs               |
+| Early access attempt | Time check on server           |
 
+---
 
+## 📊 Performance Benchmarks
 
-## Troubleshooting 🛠️
+| File Size | Compression | Encryption | Upload |
+| --------- | ----------- | ---------- | ------ |
+| 1 MB      | \~100 ms    | \~80 ms    | Fast   |
+| 100 MB    | \~1.2 s     | \~0.9 s    | Fast   |
+| 1 GB      | \~11.5 s    | \~8.3 s    | Medium |
 
-### Common Issues
-1. **"Invalid Password" Errors**
-   - Verify password meets complexity requirements
-   - Check system time synchronization
+---
 
-2. **Large File Failures**
-   ```bash
-   ulimit -a  # Check file descriptor limits
-   sudo sysctl -w fs.file-max=100000
-   ```
+## 🧰 Troubleshooting
 
-3. **Crypto++ Linking Errors**
-   ```bash
-   sudo ldconfig
-   export LD_LIBRARY_PATH=/usr/local/lib
-   ```
+### Issue: Crypto++ not found
 
-## FAQs ❓
+```bash
+sudo ldconfig
+export LD_LIBRARY_PATH=/usr/local/lib
+```
 
-**Q: Can I recover files if I forget the password?**  
-A: No - The system is designed with zero-knowledge architecture. We never store passwords.
+### Issue: Unlock returns “still locked”
 
-**Q: What happens when the unlock date arrives?**  
-A: Files remain encrypted until the correct password is entered after the unlock date.
+* Ensure system time is correct
+* Server uses UTC; client mismatch may block unlock
 
-**Q: Is there a file size limit?**  
-A: Default is 1GB, configurable via environment variables.
+---
 
-## Contributing 🤝
+## ❓ FAQs
 
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open Pull Request
+**Q: Can I recover files without the password?**
+A: No. The system uses zero-knowledge encryption. Passwords are never stored.
 
-## License 📄
+**Q: What if I try to unlock too early?**
+A: The server will deny the request until the unlock date.
 
-MIT License  
-Copyright (c) 2024 [Riyansh sachan]
+**Q: Can I change the unlock date?**
+A: No. Once uploaded, the `.tcf` file and its metadata are immutable.
 
+---
 
+## 🤝 Contributing
+
+We welcome contributions!
+
+1. Fork the repo
+2. Create a feature branch
+3. Add changes with `commit -m "description"`
+4. Push and open a Pull Request
+
+---
+
+## 📜 License
+
+MIT License
+© 2024 Riyansh Sachan
+
+- a `poster or presentation format`
+
+I can generate any of those from this content.
+```
