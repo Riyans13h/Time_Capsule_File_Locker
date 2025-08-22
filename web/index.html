@@ -11,7 +11,7 @@
     <div class="container">
         <header>
             <h1>⏳ Time Capsule Locker</h1>
-            <p>Secure files until your specified unlock date</p>
+            <p>Secure files until your specified unlock date & time</p>
         </header>
 
         <div class="tabs">
@@ -19,6 +19,7 @@
             <button class="tab" data-tab="unlock">Unlock Files</button>
         </div>
 
+        <!-- Lock Tab -->
         <div id="lock-tab" class="tab-content active">
             <div class="file-upload">
                 <input type="file" id="file-input">
@@ -30,6 +31,12 @@
                 <label for="unlock-date">Unlock Date:</label>
                 <input type="date" id="unlock-date" min="">
             </div>
+
+            <!-- ✅ Added Unlock Time -->
+            <div class="time-picker">
+                <label for="unlock-time">Unlock Time:</label>
+                <input type="time" id="unlock-time">
+            </div>
             
             <div class="password">
                 <label for="password">Password:</label>
@@ -40,10 +47,11 @@
             <div id="lock-status" class="status"></div>
         </div>
 
+        <!-- Unlock Tab -->
         <div id="unlock-tab" class="tab-content">
             <div class="file-upload">
                 <input type="file" id="tcf-input" accept=".tcf">
-                <label for="tcf-input">Choose .tcf File</label>
+                <label for="tcf-input">Choose capsule ID</label>
                 <span id="tcf-name">No file selected</span>
             </div>
             

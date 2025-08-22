@@ -41,9 +41,16 @@ function setupFileInput(inputId, displayId) {
     const display = document.getElementById(displayId);
     
     input.addEventListener('change', () => {
-        display.textContent = input.files.length > 0 
-            ? input.files[0].name 
-            : 'No file selected';
+        if (input.files.length > 0) {
+            const fileName = input.files[0].name;
+            if (fileName.toLowerCase().endsWith('.tcf')) {
+                display.textContent = '(ID SELECTED)';
+            } else {
+                display.textContent = fileName;
+            }
+        } else {
+            display.textContent = 'No file selected';
+        }
     });
 }
 
@@ -77,15 +84,20 @@ async function unlockFile() {
     const fileInput = document.getElementById('tcf-input');
     const passwordInput = document.getElementById('unlock-password');
     const statusDiv = document.getElementById('unlock-status');
-    
+
     resetStatus(statusDiv);
 
     try {
         validateUnlockInputs(fileInput, passwordInput, statusDiv);
-        
+
+        // Show only "Selected" instead of filename
+        if (fileInput.files.length > 0 && fileInput.files[0].name.endsWith(".tcf")) {
+            statusDiv.textContent = 'Selected';
+        }
+
         statusDiv.textContent = 'Unlocking file...';
         const formData = createUnlockFormData(fileInput, passwordInput);
-        
+
         const response = await fetchWithTimeout('http://localhost:3000/api/unlock', {
             method: 'POST',
             body: formData
