@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Capsule - Sender</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🕒 Time Capsule File Locker</h1>
+            <p>Securely send files that unlock at a future date</p>
+        </header>
+
+        <main>
+            <div class="upload-section">
+                <h2>Create New Time Capsule</h2>
+                
+                <form id="uploadForm" class="upload-form">
+                    <div class="form-group">
+                        <label for="receiverId">Receiver ID/Email:</label>
+                        <input type="text" id="receiverId" name="receiverId" required 
+                               placeholder="Enter receiver's email address">
+                        <small>This must match the receiver's registered ID</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="fileInput">Select File:</label>
+                        <input type="file" id="fileInput" name="file" required>
+                        <div class="file-info" id="fileInfo"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="releaseTime">Unlock Date & Time (UTC):</label>
+                        <input type="datetime-local" id="releaseTime" name="releaseTime" required>
+                        <small>Files cannot be accessed before this time</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password:</label>
+                        <input type="password" id="password" name="password" 
+                               placeholder="Leave empty for random key">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="senderInfo">Your Contact Info (Optional):</label>
+                        <input type="text" id="senderInfo" name="senderInfo" 
+                               placeholder="Your name or contact information">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" id="encryptBtn" class="btn-primary">
+                            🔒 Encrypt & Upload
+                        </button>
+                        <button type="button" id="clearBtn" class="btn-secondary">
+                            Clear Form
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="progress-section" id="progressSection" style="display: none;">
+                <h3>Encryption Progress</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-steps">
+                    <div class="step" id="step1">Compressing</div>
+                    <div class="step" id="step2">Encrypting</div>
+                    <div class="step" id="step3">Uploading</div>
+                    <div class="step" id="step4">Complete</div>
+                </div>
+                <div class="progress-log" id="progressLog"></div>
+            </div>
+
+            <div class="result-section" id="resultSection" style="display: none;">
+                <h3>✅ Time Capsule Created!</h3>
+                <div class="result-info">
+                    <p><strong>Capsule ID:</strong> <span id="capsuleId"></span></p>
+                    <p><strong>Receiver:</strong> <span id="receiverInfo"></span></p>
+                    <p><strong>Unlock Time:</strong> <span id="unlockTime"></span></p>
+                    <p><strong>File:</strong> <span id="fileName"></span></p>
+                    <p><strong>Created:</strong> <span id="createdTime"></span></p>
+                </div>
+                <div class="result-actions">
+                    <button id="newCapsuleBtn" class="btn-primary">Create Another Capsule</button>
+                    <button id="copyIdBtn" class="btn-secondary">Copy Capsule ID</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Time Capsule File Locker v1.0 | Secure End-to-End Encryption</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

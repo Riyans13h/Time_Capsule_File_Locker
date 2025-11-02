@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Capsule - Receiver</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🕒 Time Capsule File Locker</h1>
+            <p>Receive and decrypt your time-locked files</p>
+        </header>
+
+        <main>
+            <!-- Key Registration Section -->
+            <section id="keyRegistration" class="card">
+                <h2>🔑 Register Your Public Key</h2>
+                <p class="subtitle">First, register your public key to receive files</p>
+                
+                <form id="registerForm" class="form">
+                    <div class="form-group">
+                        <label for="receiverId">Your Receiver ID:</label>
+                        <input type="text" id="receiverId" name="receiverId" required 
+                               placeholder="Enter your unique identifier (email recommended)">
+                        <small>This will be used by senders to identify you</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pubkey">Public Key File (PEM format):</label>
+                        <input type="file" id="pubkey" name="public_key" accept=".pem" required>
+                        <small>Select your public key file (generated with keygen tool)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contact_email">Contact Email (Optional):</label>
+                        <input type="email" id="contact_email" name="contact_email" 
+                               placeholder="your-email@example.com">
+                        <small>For notifications when files are available</small>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            📝 Register Public Key
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Generate Key Pair Section -->
+                <div class="generate-keys-section">
+                    <div class="section-header">
+                        <h3>🔐 Don't have a key pair yet?</h3>
+                        <button id="generateKeysBtn" class="btn-generate">
+                            🛠️ Generate Key Pair
+                        </button>
+                    </div>
+                    
+                    <div id="keyGenerationGuide" class="key-generation-guide" style="display: none;">
+                        <div class="guide-steps">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Open Terminal/Command Prompt</h4>
+                                    <p>Navigate to the receiver directory:</p>
+                                    <code class="code-block">cd time_capsule_file_locker/receiver</code>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Generate Your Key Pair</h4>
+                                    <p>Run the keygen tool with your preferred name:</p>
+                                    <div class="command-input">
+                                        <input type="text" id="keyNameInput" 
+                                               placeholder="your_name" 
+                                               value="my_key">
+                                        <button onclick="receiverApp.copyKeygenCommand()" 
+                                                class="btn-copy">
+                                            📋 Copy Command
+                                        </button>
+                                    </div>
+                                    <code id="keygenCommand" class="code-block">./keygen --name my_key --output ~/.timecapsule</code>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Find Your Generated Keys</h4>
+                                    <p>After generation, you'll find two files:</p>
+                                    <ul class="file-list">
+                                        <li>
+                                            <strong>Public Key:</strong> 
+                                            <code id="publicKeyFile">my_key_public.pem</code>
+                                            <span class="file-purpose">(Upload this above)</span>
+                                        </li>
+                                        <li>
+                                            <strong>Private Key:</strong> 
+                                            <code id="privateKeyFile">my_key_private.pem</code>
+                                            <span class="file-purpose">(Keep this secure!)</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Upload Your Public Key</h4>
+                                    <p>Return to the form above and upload your <strong>public key file</strong>.</p>
+                                    <div class="security-note">
+                                        <strong>⚠️ Important:</strong> Never share your private key!
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="guide-actions">
+                            <button onclick="receiverApp.hideKeyGenerationGuide()" 
+                                    class="btn-secondary">
+                                ← Back to Registration
+                            </button>
+                            <button onclick="receiverApp.downloadKeygenTool()" 
+                                    class="btn-download">
+                                💾 Download Keygen Tool (if needed)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Rest of the HTML remains the same -->
+            <section id="receiverDashboard" class="card" style="display: none;">
+                <!-- ... existing dashboard content ... -->
+            </section>
+
+            <section id="downloadSection" class="card" style="display: none;">
+                <!-- ... existing download content ... -->
+            </section>
+
+            <section class="card">
+                <!-- ... existing output content ... -->
+            </section>
+        </main>
+
+        <footer>
+            <p>Time Capsule File Locker v1.0 | Secure End-to-End Encryption</p>
+            <p class="footer-links">
+                <a href="/sender">Switch to Sender Interface</a> | 
+                <a href="/docs">Documentation</a>
+            </p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
